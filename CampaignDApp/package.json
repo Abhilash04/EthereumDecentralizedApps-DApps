@@ -1,5 +1,5 @@
 {
-  "name": "kickstart",
+  "name": "campaign_factory",
   "version": "1.0.0",
   "description": "Campaign Kickstarter Application for Crowd Funding",
   "main": "index.js",
