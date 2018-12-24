@@ -2,3 +2,4 @@
 *.DS_Store
 *.git
 *.next
+*package-lock.json
