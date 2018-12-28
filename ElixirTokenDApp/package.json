@@ -1,0 +1,19 @@
+{
+  "name": "elixirtokendapp",
+  "version": "1.0.0",
+  "description": "Elixir Token ICO Development",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "elixir technologies",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "ganache-cli": "^6.2.5",
+    "mocha": "^5.2.0",
+    "solc": "^0.4.25",
+    "truffle-hdwallet-provider": "^1.0.1",
+    "web3": "^1.0.0-beta.35"
+  }
+}
