@@ -24,12 +24,12 @@ describe("Elixir Token", () => {
 
   it("checks initial total supply", async () => {
     totalSupply = await token.methods.totalSupply().call();
-    assert(totalSupply, 1500000);
+    assert.equal(totalSupply, 1500000);
   });
 
   it("checks total token of contract owner", async () => {
     balance = await token.methods.balanceOf(accounts[0]).call();
-    assert(balance, 1500000);
+    assert.equal(balance, 1500000);
   });
 
   it("checks initial values of contract", async () => {
@@ -38,24 +38,91 @@ describe("Elixir Token", () => {
     standard = await token.methods.standard().call();
     totalSupply = await token.methods.totalSupply().call();
 
-    assert(name, "Elixir Token");
-    assert(symbol, "EXR");
-    assert(totalSupply, "Elixir Token v1.0");
-    assert(standard, "");
+    assert.equal(name, "Elixir Token");
+    assert.equal(symbol, "EXR");
+    assert.equal(totalSupply, 1500000);
+    assert.equal(standard, "Elixir Token v1.0");
   });
 
   it("checks transfer token functionality", async () => {
+    receipt = "";
     try {
       receipt = await token.methods
         .transfer(accounts[1], 25000)
         .send({ from: accounts[0], gas: "6000000" });
+      assert(receipt != undefined && receipt != "");
     } catch (err) {
       console.log(err.message);
       assert(err.message.indexOf("revert") == 0);
     }
+
+    assert.equal(receipt.status, true, "Transfer event status is false!!");
+    assert.equal(
+      receipt.events.Transfer.event,
+      "Transfer",
+      "Transfer event not triggered!!"
+    );
     transferredToken = await token.methods.balanceOf(accounts[1]).call();
     remainingToken = await token.methods.balanceOf(accounts[0]).call();
-    assert(transferredToken, 1500000);
-    assert(remainingToken, 1475000);
+    assert.equal(transferredToken, 25000);
+    assert.equal(remainingToken, 1475000);
+  });
+
+  it("approves tokens for delegated transfer", async () => {
+    receipt = await token.methods.approve(accounts[1], 200).send({
+      from: accounts[0],
+      gas: "6000000"
+    });
+    allowance = await token.methods.allowance(accounts[0], accounts[1]).call();
+    assert.equal(receipt.status, true, "Approval event status is false!!");
+    assert.equal(
+      receipt.events.Approval.event,
+      "Approval",
+      "Approval event not triggered."
+    );
+    assert.equal(
+      allowance,
+      200,
+      "allowance doesn't match with approved token."
+    );
+  });
+
+  it("handles delegated transfer", async () => {
+    fromAccount = accounts[1];
+    spendingAccount = accounts[2];
+    toAccount = accounts[3];
+
+    await token.methods.transfer(fromAccount, 200).send({
+      from: accounts[0],
+      gas: "6000000"
+    });
+
+    await token.methods.approve(spendingAccount, 100).send({
+      from: fromAccount,
+      gas: "6000000"
+    });
+
+    try {
+      await token.methods.transferFrom(fromAccount, toAccount, 101).send({
+        from: spendingAccount,
+        gas: "6000000"
+      });
+      assert(false, "able to send the token beyond allowance.");
+    } catch (err) {
+      assert.ok(err);
+    }
+
+    await token.methods.transferFrom(fromAccount, toAccount, 50).send({
+      from: spendingAccount,
+      gas: "6000000"
+    });
+
+    toAccountBalance = await token.methods.balanceOf(toAccount).call();
+
+    assert.equal(
+      toAccountBalance,
+      50,
+      "unable to send tokens using delegated call."
+    );
   });
 });
