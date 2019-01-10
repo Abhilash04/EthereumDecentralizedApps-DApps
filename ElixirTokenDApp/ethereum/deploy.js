@@ -1,6 +1,6 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const Web3 = require("web3");
-const tokenSale = require("./build/TokenSale.json");
+const elixirToken = require("./build/ElixirToken.json");
 
 // Setup provider
 
@@ -17,12 +17,14 @@ const deploy = async () => {
   // Mnemonic can have many accounts
   const accounts = await web3.eth.getAccounts();
   console.log("Attempting to deploy from account", accounts[0]);
-
+  const initialSupply = 1000000;
+  const tokenPrice = 1000000000000000;
   // Deployment Process
-  const result = await new web3.eth.Contract(
-    JSON.parse(compileFactory.interface)
-  )
-    .deploy({ data: "0x" + tokenSale.bytecode })
+  const result = await new web3.eth.Contract(JSON.parse(elixirToken.interface))
+    .deploy({
+      data: "0x" + elixirToken.bytecode,
+      arguments: [initialSupply, tokenPrice]
+    })
     .send({ from: accounts[0] });
 
   console.log("Contract Deployed To:\n", result.options.address);
