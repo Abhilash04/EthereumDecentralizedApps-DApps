@@ -10,17 +10,17 @@ class ElixirTokenIndex extends Component {
     const tokenPriceInEther = web3.utils.fromWei(tokenPrice, "Ether");
 
     const accounts = await web3.eth.getAccounts();
-    console.log(accounts);
 
-    // const tokenBalanceOfCurrentAccount = await elixir.methods
-    //   .balanceOf(accounts[0])
-    //   .call();
+    const tokenBalanceOfCurrentAccount = await elixir.methods
+      .balanceOf(accounts[0])
+      .call();
+
     return {
       totalSupply,
       symbol,
       tokenPriceInEther,
-      accounts
-      // ,tokenBalanceOfCurrentAccount
+      accounts,
+      tokenBalanceOfCurrentAccount
     };
   }
   render() {
@@ -29,8 +29,9 @@ class ElixirTokenIndex extends Component {
         <h1>ELIXIR TOKEN ICO SALE</h1>
         <p>
           Introducing "Elixir Token" {this.props.symbol}. Token price is{" "}
-          {this.props.tokenPriceInEther} Ether. {this.props.accounts} currently
-          have {this.props.symbol}.
+          {this.props.tokenPriceInEther} Ether. Your account{" "}
+          {this.props.accounts} currently have{" "}
+          {this.props.tokenBalanceOfCurrentAccount} {this.props.symbol}.
         </p>
       </div>
     );
